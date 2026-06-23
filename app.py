@@ -29,7 +29,7 @@ CONFIG = {
     "shop_name":       os.environ.get("SHOP_NAME", "MALEK NASRI"),
     "shop_tagline":    os.environ.get("SHOP_TAGLINE", "Barber Co."),
     "shop_city":       os.environ.get("SHOP_CITY", "Amman, Jordan"),
-    "shop_tagline": os.environ.get("SHOP_TAGLINE", "Powered by RM Studio"),
+   "powered_by":       os.environ.get("POWERED_BY", "RM Studio"),
     "shop_phone":      os.environ.get("SHOP_PHONE", "0799269883"),
     "member_prefix":   os.environ.get("MEMBER_PREFIX", "GLD"),
     "visits_per_reward": int(os.environ.get("VISITS_PER_REWARD", "3")),  # 3 cuts = 1 free
