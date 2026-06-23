@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0c">
+<title>{{ config.shop_name }} — Staff Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<main class="shell shell--wide">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand__mark"><span id="mark"></span></span>
+      <span>
+        <span class="brand__name">{{ config.shop_name }}</span>
+        <span class="brand__sub">Staff Panel</span>
+      </span>
+    </div>
+    <div class="flexrow">
+      <a class="btn btn--ghost btn--sm" href="/qr">QR poster</a>
+      <a class="btn btn--ghost btn--sm" href="/admin/logout">Sign out</a>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="stat"><div class="stat__num" id="kMembers">0</div><div class="stat__lbl">Members</div></div>
+    <div class="stat"><div class="stat__num" id="kVisits">0</div><div class="stat__lbl">Total visits</div></div>
+    <div class="stat"><div class="stat__num" id="kRewards">0</div><div class="stat__lbl">Rewards ready</div></div>
+  </div>
+
+  <div class="toolbar">
+    <input class="input" id="search" type="search" inputmode="tel"
+           placeholder="Search by phone or name…">
+    <button class="btn btn--ghost btn--sm" id="clearBtn">Clear</button>
+  </div>
+
+  <div id="list"></div>
+  <div class="empty hide" id="empty">No members match that search.</div>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script>
+  document.getElementById('mark').innerHTML = ICONS.scissors;
+  const GOAL = {{ config.visits_per_reward }};
+
+  const listEl   = document.getElementById('list');
+  const emptyEl  = document.getElementById('empty');
+  const searchEl = document.getElementById('search');
+
+  function minibar(progress, goal) {
+    let html = '<div class="minibar">';
+    for (let i = 0; i < goal; i++) html += '<i class="' + (i < progress ? 'on' : '') + '"></i>';
+    return html + '</div>';
+  }
+
+  function memberCard(c) {
+    const ready = c.reward_ready;
+    const pill = ready
+      ? '<span class="pill pill--ready">' + c.free_available + ' free ready</span>'
+      : '<span class="pill">' + c.progress + '/' + c.goal + ' to reward</span>';
+
+    return `
+      <div class="member" data-id="${c.id}">
+        <div class="member__head">
+          <div>
+            <div class="member__name">${c.name ? escapeHtml(c.name) : 'Unnamed member'}</div>
+            <div class="member__phone">${escapeHtml(c.phone)} · ${c.total_haircuts} cuts · since ${fmtDate(c.created_at)}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="member__code">${c.member_code}</div>
+            <div class="mt-s">${pill}</div>
+          </div>
+        </div>
+        ${minibar(c.progress, c.goal)}
+        <div class="member__actions">
+          <button class="btn btn--gold btn--sm act-visit">+ Add visit</button>
+          <button class="btn btn--ghost btn--sm act-redeem" ${ready ? '' : 'disabled'}>Use free haircut</button>
+          <span class="spacer"></span>
+          <button class="linklike act-delete">Remove</button>
+        </div>
+      </div>`;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, m =>
+      ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+  }
+
+  async function load(q = '') {
+    const data = await api('/api/admin/customers' + (q ? '?q=' + encodeURIComponent(q) : ''));
+    document.getElementById('kMembers').textContent = data.totals.members;
+    document.getElementById('kVisits').textContent  = data.totals.visits;
+    document.getElementById('kRewards').textContent = data.totals.rewards_ready;
+
+    listEl.innerHTML = data.customers.map(memberCard).join('');
+    emptyEl.classList.toggle('hide', data.customers.length > 0);
+  }
+
+  // Event delegation for member actions
+  listEl.addEventListener('click', async (e) => {
+    const card = e.target.closest('.member');
+    if (!card) return;
+    const id = Number(card.dataset.id);
+
+    try {
+      if (e.target.classList.contains('act-visit')) {
+        e.target.disabled = true;
+        const c = await api('/api/admin/visit', { method: 'POST', body: JSON.stringify({ user_id: id }) });
+        toast('Visit added — ' + c.total_haircuts + ' total' + (c.reward_ready ? '. Free haircut earned!' : ''));
+        await load(searchEl.value.trim());
+      }
+      else if (e.target.classList.contains('act-redeem')) {
+        const c = await api('/api/admin/redeem', { method: 'POST', body: JSON.stringify({ user_id: id }) });
+        toast('Free haircut redeemed. ' + c.free_available + ' remaining.');
+        await load(searchEl.value.trim());
+      }
+      else if (e.target.classList.contains('act-delete')) {
+        if (!confirm('Remove this member and all their visits? This cannot be undone.')) return;
+        await api('/api/admin/customer/' + id, { method: 'DELETE' });
+        toast('Member removed.');
+        await load(searchEl.value.trim());
+      }
+    } catch (ex) {
+      toast(ex.message);
+      await load(searchEl.value.trim());
+    }
+  });
+
+  // Debounced search
+  let t;
+  searchEl.addEventListener('input', () => {
+    clearTimeout(t);
+    t = setTimeout(() => load(searchEl.value.trim()), 220);
+  });
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    searchEl.value = ''; load();
+  });
+
+  load();
+</script>
+</body>
+</html>

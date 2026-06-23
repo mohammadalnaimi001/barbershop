@@ -1,0 +1,422 @@
+/* ===========================================================================
+   GILDED — Barber Loyalty System
+   Palette : ink black + royal gold, warm cream type
+   Display : Bebas Neue (signage)   Body/UI : Inter
+   Signature: the gold "stamp card" — a barbershop punch card in gold foil
+   =========================================================================== */
+
+:root {
+  --ink:        #0b0b0c;
+  --ink-2:      #121214;
+  --ink-3:      #1a1a1d;
+  --ink-4:      #232327;
+  --line:       rgba(212, 175, 55, 0.16);
+  --line-soft:  rgba(255, 255, 255, 0.06);
+
+  --gold:       #d4af37;
+  --gold-bright:#f3d27a;
+  --gold-deep:  #a07d23;
+  --gold-grad:  linear-gradient(135deg, #f3d27a 0%, #d4af37 45%, #a07d23 100%);
+
+  --cream:      #f4ead2;
+  --text:       #e9e4d8;
+  --muted:      #8d887d;
+  --muted-2:    #615e58;
+
+  --ok:         #5bbf8a;
+  --warn:       #e0a64b;
+  --danger:     #d8654f;
+
+  --radius:     16px;
+  --radius-sm:  10px;
+  --shadow:     0 24px 60px -28px rgba(0, 0, 0, 0.8);
+  --glow:       0 0 0 1px rgba(212,175,55,0.25), 0 10px 40px -12px rgba(212,175,55,0.35);
+
+  --ff-display: "Bebas Neue", "Inter", sans-serif;
+  --ff-body:    "Inter", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--ff-body);
+  color: var(--text);
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(212,175,55,0.08), transparent 60%),
+    radial-gradient(700px 700px at 100% 110%, rgba(212,175,55,0.04), transparent 55%),
+    var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+a { color: inherit; }
+
+/* ---- layout shells ------------------------------------------------------- */
+.shell {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.shell--wide { max-width: 960px; }
+
+.center-screen {
+  justify-content: center;
+}
+
+/* ---- brand wordmark ------------------------------------------------------ */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand__mark {
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(160deg, var(--ink-3), var(--ink-2));
+}
+.brand__mark svg { width: 22px; height: 22px; }
+.brand__name {
+  font-family: var(--ff-display);
+  font-size: 30px;
+  letter-spacing: 3px;
+  line-height: 1;
+  background: var(--gold-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand__sub {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* ---- hero / headings ----------------------------------------------------- */
+h1, h2, h3 { margin: 0; }
+.display {
+  font-family: var(--ff-display);
+  letter-spacing: 1.5px;
+  line-height: 0.95;
+  color: var(--cream);
+}
+.display--xl { font-size: clamp(46px, 13vw, 66px); }
+.display--lg { font-size: 40px; }
+
+.lede { color: var(--muted); font-size: 15px; }
+
+.hairline {
+  height: 1px; border: 0;
+  background: linear-gradient(90deg, transparent, var(--line), transparent);
+  margin: 22px 0;
+}
+
+/* ---- cards --------------------------------------------------------------- */
+.card {
+  background: linear-gradient(180deg, var(--ink-2), var(--ink));
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.card--gold { border-color: var(--line); }
+
+/* ---- forms --------------------------------------------------------------- */
+.field { margin-bottom: 14px; }
+.label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.input {
+  width: 100%;
+  font-family: var(--ff-body);
+  font-size: 16px;            /* >=16px stops iOS zoom on focus */
+  color: var(--cream);
+  background: var(--ink-3);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  transition: border-color .18s, box-shadow .18s;
+}
+.input::placeholder { color: var(--muted-2); }
+.input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,175,55,0.14);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  font-family: var(--ff-body);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  padding: 15px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .12s, filter .18s, background .18s;
+}
+.btn:active { transform: translateY(1px); }
+.btn--gold {
+  color: #1a1407;
+  background: var(--gold-grad);
+  box-shadow: 0 10px 30px -14px rgba(212,175,55,0.7);
+}
+.btn--gold:hover { filter: brightness(1.06); }
+.btn--ghost {
+  color: var(--cream);
+  background: var(--ink-3);
+  border-color: var(--line-soft);
+}
+.btn--ghost:hover { border-color: var(--line); }
+.btn--sm { width: auto; padding: 10px 14px; font-size: 13px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.note {
+  font-size: 13px;
+  margin-top: 10px;
+  min-height: 18px;
+}
+.note--err { color: var(--danger); }
+.note--ok  { color: var(--ok); }
+
+/* ---- SIGNATURE: the gold stamp card -------------------------------------- */
+.stampcard {
+  position: relative;
+  border-radius: var(--radius);
+  padding: 26px 22px 24px;
+  background:
+    radial-gradient(140% 120% at 0% 0%, rgba(212,175,55,0.10), transparent 55%),
+    linear-gradient(180deg, #161512, #0e0d0b);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.stampcard.is-ready {
+  box-shadow: var(--glow);
+  border-color: var(--gold);
+}
+.stampcard__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.stampcard__title {
+  font-family: var(--ff-display);
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--cream);
+}
+.stampcard__hint { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.slots {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.slot {
+  flex: 1;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(212,175,55,0.3);
+  background: rgba(255,255,255,0.015);
+  color: var(--muted-2);
+  position: relative;
+  transition: transform .2s;
+}
+.slot svg { width: 46%; height: 46%; }
+.slot.filled {
+  border-style: solid;
+  border-color: transparent;
+  background: var(--gold-grad);
+  color: #14100a;
+  box-shadow: 0 8px 22px -10px rgba(212,175,55,0.6);
+}
+.slot.next {
+  border-color: var(--gold);
+  color: var(--gold);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.0); }
+  50%      { box-shadow: 0 0 0 4px rgba(212,175,55,0.16); }
+}
+
+.stampcard__foot {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.reward-banner {
+  margin-top: 16px;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(212,175,55,0.16), rgba(212,175,55,0.04));
+  border: 1px solid var(--gold);
+}
+.reward-banner strong { color: var(--gold-bright); }
+
+/* ---- stat tiles ---------------------------------------------------------- */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat {
+  background: var(--ink-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+.stat__num {
+  font-family: var(--ff-display);
+  font-size: 36px;
+  line-height: 1;
+  color: var(--gold-bright);
+  font-variant-numeric: tabular-nums;
+}
+.stat__lbl {
+  font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted);
+  margin-top: 6px;
+}
+
+/* ---- visit history ------------------------------------------------------- */
+.history { list-style: none; margin: 0; padding: 0; }
+.history li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 14px;
+}
+.history li:last-child { border-bottom: 0; }
+.history .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gold); flex: none;
+  box-shadow: 0 0 8px rgba(212,175,55,0.6);
+}
+.history .when { color: var(--text); }
+.history .ago { margin-left: auto; color: var(--muted); font-size: 12px; }
+
+.empty {
+  text-align: center; color: var(--muted);
+  padding: 26px 10px; font-size: 14px;
+}
+
+/* ---- admin --------------------------------------------------------------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 22px;
+}
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
+.toolbar .input { flex: 1; min-width: 180px; }
+
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 8px; }
+
+.member {
+  background: var(--ink-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.member__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.member__name { font-weight: 700; color: var(--cream); font-size: 16px; }
+.member__phone { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.member__code {
+  font-family: var(--ff-display); letter-spacing: 2px;
+  color: var(--gold); font-size: 18px;
+}
+
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600;
+  padding: 5px 10px; border-radius: 999px;
+  border: 1px solid var(--line-soft);
+  color: var(--muted);
+}
+.pill--ready { color: #14100a; background: var(--gold-grad); border-color: transparent; }
+
+.minibar { display: flex; gap: 5px; margin: 14px 0; }
+.minibar i {
+  height: 6px; flex: 1; border-radius: 99px;
+  background: var(--ink-4);
+}
+.minibar i.on { background: var(--gold-grad); }
+
+.member__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.qr-wrap { text-align: center; }
+.qr-wrap img {
+  width: 260px; height: 260px;
+  background: #fff; padding: 14px; border-radius: 16px;
+  border: 1px solid var(--line);
+}
+
+.flexrow { display: flex; align-items: center; gap: 10px; }
+.spacer { flex: 1; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.mt { margin-top: 18px; }
+.mt-s { margin-top: 10px; }
+.hide { display: none !important; }
+
+.linklike {
+  background: none; border: 0; cursor: pointer;
+  color: var(--gold); font-size: 13px; padding: 4px;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* ---- toast --------------------------------------------------------------- */
+.toast {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+  background: var(--ink-4); color: var(--cream);
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px 18px; font-size: 14px;
+  box-shadow: var(--shadow); opacity: 0; pointer-events: none;
+  transition: opacity .25s, transform .25s; z-index: 50; max-width: 90vw;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---- accessibility & motion --------------------------------------------- */
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+@media (min-width: 720px) {
+  .member__head { align-items: center; }
+}

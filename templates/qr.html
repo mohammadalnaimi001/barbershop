@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0c">
+<title>{{ config.shop_name }} — QR Poster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #0b0b0c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="topbar no-print">
+    <a class="linklike" href="/admin">← Back to panel</a>
+    <button class="btn btn--ghost btn--sm" onclick="window.print()">Print poster</button>
+  </div>
+
+  <div class="card card--gold" style="text-align:center; padding:34px 24px;">
+    <div class="brand" style="justify-content:center; margin-bottom:8px;">
+      <span class="brand__mark"><span id="mark"></span></span>
+      <span>
+        <span class="brand__name">{{ config.shop_name }}</span>
+        <span class="brand__sub">{{ config.shop_tagline }}</span>
+      </span>
+    </div>
+
+    <p class="eyebrow mt">Members' Chair</p>
+    <h1 class="display display--xl mt-s">Every 3rd<br>cut free</h1>
+    <p class="lede mt-s">Scan to join. Collect your cuts.<br>No app, no card to lose.</p>
+
+    <div class="qr-wrap mt">
+      <img src="{{ url_for('qr_image') }}" alt="Scan to join the loyalty program">
+    </div>
+
+    <p class="small muted mt">{{ config.shop_city }} · {{ config.shop_phone }}</p>
+  </div>
+
+  <p class="small muted no-print" style="text-align:center; margin-top:20px;">
+    The QR points to this site's home page. Set <code>PUBLIC_URL</code> on your server
+    so it works for customers off your network.
+  </p>
+</main>
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script>document.getElementById('mark').innerHTML = ICONS.scissors;</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0c">
+<title>{{ config.shop_name }} — Staff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<main class="shell center-screen">
+  <div class="brand" style="justify-content:center; margin-bottom:30px;">
+    <span class="brand__mark"><span id="mark"></span></span>
+    <span>
+      <span class="brand__name">{{ config.shop_name }}</span>
+      <span class="brand__sub">Staff Access</span>
+    </span>
+  </div>
+
+  <div class="card card--gold">
+    <p class="eyebrow">Behind the chair</p>
+    <h1 class="display display--lg mt-s">Staff sign-in</h1>
+    <form method="post" class="mt">
+      <div class="field">
+        <label class="label" for="password">Password</label>
+        <input class="input" id="password" name="password" type="password"
+               autocomplete="current-password" placeholder="Enter staff password" autofocus>
+      </div>
+      <button class="btn btn--gold" type="submit">Open panel</button>
+      {% if error %}<p class="note note--err">{{ error }}</p>{% endif %}
+    </form>
+  </div>
+  <a class="linklike" href="/" style="text-align:center; margin-top:22px;">Back to member page</a>
+</main>
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script>document.getElementById('mark').innerHTML = ICONS.scissors;</script>
+</body>
+</html>

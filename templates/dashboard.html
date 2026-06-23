@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0c">
+<title>{{ config.shop_name }} — My Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<main class="shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand__mark"><span id="mark"></span></span>
+      <span>
+        <span class="brand__name">{{ config.shop_name }}</span>
+        <span class="brand__sub">{{ config.shop_tagline }}</span>
+      </span>
+    </div>
+    <a class="linklike" href="/">Switch number</a>
+  </div>
+
+  <div id="loading" class="empty">Loading your card…</div>
+
+  <section id="content" class="hide">
+
+    <p class="eyebrow" id="greeting">Welcome back</p>
+    <h1 class="display display--lg" id="memberName">Member</h1>
+    <p class="lede" id="memberMeta">—</p>
+
+    <hr class="hairline">
+
+    <!-- SIGNATURE: the gold stamp card -->
+    <div class="stampcard" id="stampcard">
+      <div class="stampcard__top">
+        <div>
+          <div class="stampcard__title">Loyalty Card</div>
+          <div class="stampcard__hint" id="cardHint">Collect 3 cuts for a free one</div>
+        </div>
+        <div class="member__code" id="memberCode">—</div>
+      </div>
+
+      <div class="slots" id="slots"></div>
+
+      <div class="stampcard__foot">
+        <span id="progressText">0 of 3 this round</span>
+        <span id="lifetimeText" class="muted"></span>
+      </div>
+
+      <div class="reward-banner hide" id="rewardBanner">
+        <span style="color:var(--gold-bright); width:22px;" id="rewardIcon"></span>
+        <span>You have <strong id="rewardCount">1</strong> free haircut waiting. Show this screen at the counter.</span>
+      </div>
+    </div>
+
+    <div class="stats mt">
+      <div class="stat">
+        <div class="stat__num" id="totalCuts">0</div>
+        <div class="stat__lbl">Total haircuts</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num" id="freeAvail">0</div>
+        <div class="stat__lbl">Free cuts ready</div>
+      </div>
+    </div>
+
+    <h2 class="display display--lg mt" style="font-size:26px;">Visit history</h2>
+    <div class="card mt-s" style="padding:6px 18px;">
+      <ul class="history" id="history"></ul>
+      <div class="empty hide" id="noVisits">No visits logged yet. Your first cut starts the card.</div>
+    </div>
+
+    <p class="small muted" style="text-align:center; margin-top:26px;">
+      Visits are added by the shop at checkout · {{ config.shop_phone }}
+    </p>
+  </section>
+</main>
+
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script>
+  document.getElementById('mark').innerHTML = ICONS.scissors;
+  document.getElementById('rewardIcon').innerHTML = ICONS.star;
+
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id') || localStorage.getItem('gilded_id');
+  const isWelcome = params.get('welcome') === '1';
+
+  if (!id) { location.href = '/'; }
+
+  function renderSlots(progress, goal, ready) {
+    const slots = document.getElementById('slots');
+    slots.innerHTML = '';
+    for (let i = 0; i < goal; i++) {
+      const div = document.createElement('div');
+      const filled = i < progress;
+      div.className = 'slot' + (filled ? ' filled' : (i === progress && !ready ? ' next' : ''));
+      div.innerHTML = filled ? ICONS.check : ICONS.scissors;
+      slots.appendChild(div);
+    }
+  }
+
+  function render(d) {
+    document.getElementById('greeting').textContent =
+      isWelcome ? 'Welcome to the chair' : 'Welcome back';
+    document.getElementById('memberName').textContent = d.name || 'Member';
+    document.getElementById('memberMeta').textContent =
+      d.phone + ' · Member since ' + fmtDate(d.created_at);
+    document.getElementById('memberCode').textContent = d.member_code;
+    document.getElementById('cardHint').textContent =
+      'Collect ' + d.goal + ' cuts for a free one';
+
+    renderSlots(d.progress, d.goal, d.reward_ready);
+
+    document.getElementById('progressText').textContent =
+      d.progress + ' of ' + d.goal + ' this round';
+    document.getElementById('lifetimeText').textContent =
+      d.total_haircuts + ' lifetime';
+
+    document.getElementById('totalCuts').textContent = d.total_haircuts;
+    document.getElementById('freeAvail').textContent = d.free_available;
+
+    const card = document.getElementById('stampcard');
+    const banner = document.getElementById('rewardBanner');
+    if (d.reward_ready) {
+      card.classList.add('is-ready');
+      banner.classList.remove('hide');
+      document.getElementById('rewardCount').textContent = d.free_available;
+    } else {
+      card.classList.remove('is-ready');
+      banner.classList.add('hide');
+    }
+
+    const list = document.getElementById('history');
+    const none = document.getElementById('noVisits');
+    list.innerHTML = '';
+    if (!d.visits.length) {
+      none.classList.remove('hide');
+    } else {
+      none.classList.add('hide');
+      d.visits.forEach(v => {
+        const li = document.createElement('li');
+        li.innerHTML =
+          '<span class="dot"></span>' +
+          '<span class="when">' + fmtDate(v) + ' · ' + fmtTime(v) + '</span>' +
+          '<span class="ago">' + timeAgo(v) + '</span>';
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById('loading').classList.add('hide');
+    document.getElementById('content').classList.remove('hide');
+  }
+
+  (async () => {
+    try {
+      const d = await api('/api/customer/' + encodeURIComponent(id));
+      render(d);
+    } catch (ex) {
+      document.getElementById('loading').textContent =
+        'We could not find that card. Please enter your number again.';
+      setTimeout(() => location.href = '/', 1800);
+    }
+  })();
+</script>
+</body>
+</html>

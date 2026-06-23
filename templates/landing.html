@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0c">
+<title>{{ config.shop_name }} — Members</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<main class="shell center-screen">
+
+  <div class="brand" style="justify-content:center; margin-bottom:34px;">
+    <span class="brand__mark">{{ '' }}<span id="mark"></span></span>
+    <span>
+      <span class="brand__name">{{ config.shop_name }}</span>
+      <span class="brand__sub">{{ config.shop_tagline }}</span>
+    </span>
+  </div>
+
+  <div class="card card--gold">
+    <p class="eyebrow">Members' Chair</p>
+    <h1 class="display display--lg mt-s">Every 3rd cut<br>is on the house.</h1>
+    <p class="lede mt-s">Enter your number to start collecting. We track your visits — you just show up sharp.</p>
+
+    <hr class="hairline">
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label class="label" for="phone">Phone number</label>
+        <input class="input" id="phone" name="phone" type="tel"
+               inputmode="tel" autocomplete="tel"
+               placeholder="07X XXX XXXX">
+      </div>
+      <div class="field" id="nameField">
+        <label class="label" for="name">Name <span class="muted">(optional)</span></label>
+        <input class="input" id="name" name="name" type="text"
+               autocomplete="name" placeholder="What should we call you?">
+      </div>
+      <button class="btn btn--gold" type="submit" id="submit">
+        <span id="btnLabel">Continue</span>
+      </button>
+      <p class="note note--err" id="err"></p>
+    </form>
+  </div>
+
+  <p class="small muted" style="text-align:center; margin-top:26px;">
+    {{ config.shop_city }} · {{ config.shop_phone }}
+  </p>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script>
+  document.getElementById('mark').innerHTML = ICONS.scissors;
+
+  const form   = document.getElementById('form');
+  const phone  = document.getElementById('phone');
+  const name   = document.getElementById('name');
+  const err    = document.getElementById('err');
+  const submit = document.getElementById('submit');
+  const btnLabel = document.getElementById('btnLabel');
+
+  // Prefill the number we remembered for returning members.
+  const remembered = localStorage.getItem('gilded_phone');
+  if (remembered) phone.value = remembered;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    if (!phone.value.trim()) { err.textContent = 'Please enter your phone number.'; return; }
+
+    submit.disabled = true;
+    btnLabel.textContent = 'Checking…';
+    try {
+      const data = await api('/api/register', {
+        method: 'POST',
+        body: JSON.stringify({ phone: phone.value, name: name.value }),
+      });
+      localStorage.setItem('gilded_phone', data.phone);
+      localStorage.setItem('gilded_id', data.id);
+      window.location.href = '/dashboard?id=' + data.id + (data.new_member ? '&welcome=1' : '');
+    } catch (ex) {
+      err.textContent = ex.message;
+      submit.disabled = false;
+      btnLabel.textContent = 'Continue';
+    }
+  });
+</script>
+</body>
+</html>
