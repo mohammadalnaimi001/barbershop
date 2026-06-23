@@ -26,13 +26,13 @@ from flask import (
 #  change. Keep ADMIN_PASSWORD secret and change it before going live.         #
 # --------------------------------------------------------------------------- #
 CONFIG = {
-    "shop_name":       os.environ.get("SHOP_NAME", "GILDED"),
+    "shop_name":       os.environ.get("SHOP_NAME", "MALEK NASRI"),
     "shop_tagline":    os.environ.get("SHOP_TAGLINE", "Barber Co."),
     "shop_city":       os.environ.get("SHOP_CITY", "Amman, Jordan"),
-    "shop_phone":      os.environ.get("SHOP_PHONE", "077 562 9874"),
+    "shop_phone":      os.environ.get("SHOP_PHONE", "0799269883"),
     "member_prefix":   os.environ.get("MEMBER_PREFIX", "GLD"),
     "visits_per_reward": int(os.environ.get("VISITS_PER_REWARD", "3")),  # 3 cuts = 1 free
-    "admin_password":  os.environ.get("ADMIN_PASSWORD", "barber123"),    # CHANGE THIS
+    "admin_password":  os.environ.get("ADMIN_PASSWORD", "malek004"),    # CHANGE THIS
     # Public base URL the QR code points to (set on your VPS, e.g. https://shop.example.com)
     "public_url":      os.environ.get("PUBLIC_URL", ""),
 }
